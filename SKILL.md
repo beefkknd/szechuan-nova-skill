@@ -41,16 +41,28 @@ This endpoint is a Cloudflare quick tunnel to the author's private MCP server. I
 | `get_menu` | Full structured menu for a restaurant |
 | `compose_meal` | Suggest meal combinations under price / spice / protein / allergen constraints |
 | `check_availability` | Is the restaurant open? Does it support pickup/delivery? |
-| `generate_cart_url` | Log an order intent and return a cart-handoff URL |
+| `generate_cart_url` | Log an order intent and return a `handoff_url` to a page that helps the user land on the restaurant's checkout with the cart pre-populated |
 | `get_recent_orders` | List recent order intents logged on the server (for demos and debugging) |
 
 See `skill/instructions.md` for the detailed playbook and `skill/examples/sample-conversations.md` for worked examples.
 
+## Handoff flow
+
+`generate_cart_url` returns a `handoff_url` (e.g., `https://<mcp-host>/handoff/42`). Surface it to the user. The page at that URL handles the rest:
+
+1. Shows the user their order summary.
+2. First time only: the user drags a **Fill Cart** bookmarklet to their bookmarks bar.
+3. Any time: the user clicks **"Open <Restaurant> with cart encoded →"**. A new tab opens the restaurant's ordering page with the cart payload in the URL hash.
+4. The user clicks the bookmarklet on that page. It writes the cart into the page's `localStorage` and reloads.
+5. The restaurant's site shows the populated cart. The user clicks Check Out and pays with their saved card — everything stays in their own browser.
+
+The agent's job ends at step 1. Tell the user what the page does in plain language (see `skill/instructions.md`), and don't claim the order is placed until they confirm on the restaurant's site.
+
 ## Trust boundary (CRITICAL)
 
 - **The agent NEVER holds payment credentials.** This is a semantic layer, not a checkout.
-- **`generate_cart_url` does not place an order.** It logs an intent and returns a URL. The user must open that URL, review the cart on the restaurant's actual ordering page, and complete payment there.
-- **Never tell the user "I've placed your order"** or "your order is being prepared." You can say "I've prepared a cart for you to review — open this link to confirm and pay."
+- **`generate_cart_url` does not place an order.** It logs an intent and returns URLs. The user must open one of them, review the cart on the restaurant's site (or in the bridge-driven Chromium window), and complete payment there.
+- **Never tell the user "I've placed your order"** or "your order is being prepared." You can say "I've prepared a cart for you — open this link to confirm and pay."
 - **Nutrition is LLM-estimated**, not chef-verified. Surface the `disclaimer` field verbatim or paraphrased when returning nutrition info.
 - **Respect allergen constraints strictly.** If the user says "no peanuts," exclude all items tagged `peanut` — do not substitute or guess.
 
