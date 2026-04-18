@@ -19,10 +19,10 @@ Then point your runtime at `SKILL.md` per its own skill-installation docs.
 The skill connects to a remote MCP server at:
 
 ```
-http://100.111.157.36:8787/mcp
+https://malpractice-pharmacology-builder-citizens.trycloudflare.com/mcp
 ```
 
-This endpoint is reachable over the author's Tailscale network only. To use the skill from a different network, run your own MCP server and set `MCP_SERVER_URL` in your agent runtime. The MCP server implementation is maintained privately.
+This endpoint is a Cloudflare quick tunnel to the author's private MCP server. It is publicly reachable over HTTPS but the URL is ephemeral and can change. If the endpoint stops responding, run your own MCP server and set `MCP_SERVER_URL` in your agent runtime. The MCP server implementation is maintained privately.
 
 ## Files
 

@@ -24,10 +24,10 @@ Do NOT use this skill for: non-Chinese cuisines, grocery orders, restaurant rese
 ## MCP endpoint
 
 ```
-http://100.111.157.36:8787/mcp
+https://malpractice-pharmacology-builder-citizens.trycloudflare.com/mcp
 ```
 
-This endpoint is reachable over the author's Tailscale network only. If you are not a peer on that tailnet, set `MCP_SERVER_URL` in your runtime to point to your own MCP instance.
+This endpoint is a Cloudflare quick tunnel to the author's private MCP server. It is publicly reachable over HTTPS. The URL is ephemeral — if it stops responding, the tunnel has been torn down; set `MCP_SERVER_URL` in your runtime to your own MCP instance in that case.
 
 - Transport: Streamable HTTP (JSON-RPC 2.0 over POST)
 - Auth: none (authless)
